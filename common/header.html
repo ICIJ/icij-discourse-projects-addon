@@ -1,0 +1,29 @@
+<script type="text/discourse-plugin" version="0.8">
+    const container = Discourse.__container__;
+    const { h } = require('virtual-dom');
+
+    api.createWidget('project-addon-widget', {
+          tagName: 'span',
+          html(attrs, state) {
+
+              const path = window.location.pathname;
+              let project;
+
+              const controller = container.lookup('controller:navigation/project');
+              project = controller.get("project");
+
+              console.log(project)
+          }
+      }
+    )
+
+    api.decorateWidget('project-addon-widget:after', helper => {
+      helper.widget.appEvents.on('page:changed', () => {
+          helper.widget.scheduleRerender();
+      });
+    });
+</script>
+
+<script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-addon-widget'>
+    {{mount-widget widget="project-addon-widget"}}
+</script>

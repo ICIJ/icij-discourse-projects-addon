@@ -1,29 +1,25 @@
 <script type="text/discourse-plugin" version="0.8">
     const container = Discourse.__container__;
-    const { h } = require('virtual-dom');
 
-    api.createWidget('project-addon-widget', {
-          tagName: 'span',
-          html(attrs, state) {
+    function topicGroupNames () {
+      const { model } = container.lookup('controller:topic');
+      return model && model.category ? model.category.group_names : []
+    }
 
-              const path = window.location.pathname;
-              let project;
+    function projectGroupNames () {
+      const { extras } = container.lookup('controller:group').model || {};
+      return extras && extras.icij_group_names ? extras.icij_group_names : []
+    }
 
-              const controller = container.lookup('controller:navigation/project');
-              project = controller.get("project");
+    function groupNames () {
+      const names = _.flatten(topicGroupNames())
+      return _.unique(names)
+    }
 
-              console.log(project)
-          }
-      }
-    )
-
-    api.decorateWidget('project-addon-widget:after', helper => {
-      helper.widget.appEvents.on('page:changed', () => {
-          helper.widget.scheduleRerender();
+    api.decorateWidget("home-logo:after", helper => {
+      const items = _.map(groupNames(), group_name => {
+        return helper.h('a.header-projects-item', { href: '/groups/' + group_name + '/categories' }, group_name)
       });
+      return helper.h('div.header-projects', items[0]);
     });
-</script>
-
-<script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-addon-widget'>
-    {{mount-widget widget="project-addon-widget"}}
 </script>

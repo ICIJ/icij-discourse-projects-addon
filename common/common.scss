@@ -15,6 +15,10 @@
 $header-projects-item-bg: text-contrast($header_background);
 $header-projects-item-color: text-contrast($header-projects-item-bg);
 
+.d-header {
+  border-bottom: rgba($header-projects-item-bg, 0.1) 1px solid;
+}
+
 .header-projects {
   height: 42px;
   display: flex;
@@ -30,5 +34,35 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
     color:  $header-projects-item-color;
     border-radius: 0 1em 1em 0;
     box-shadow: shadow("focus");
+  }
+}
+
+.group {
+
+  .group-details-container {
+    $bg: darken($header_background, 20);
+    $color: text-contrast($bg);
+
+    margin-top: -1.4em;
+    padding: 0;
+    background: transparent;
+
+    .group-info, .group-info + hr {
+      display: none;
+    }
+
+    .group-bio {
+      font-size: 1.1487em;
+      background: $bg;
+      color: $color;
+      box-shadow: -50vw 0 0 0 $bg, 50vw 0 0 0 $bg, -25vw 0 0 0 $bg, 25vw 0 0 0 $bg;
+      padding: 1em 0;
+      min-height: 3em;
+    }
+
+    .group-details-button {
+      top: 100%;
+      margin-top: 20px;
+    }
   }
 }

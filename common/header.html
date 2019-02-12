@@ -1,25 +1,30 @@
 <script type="text/discourse-plugin" version="0.8">
     const container = Discourse.__container__;
+    const route = container.lookup("route:application");
+    let groupNames = []
 
-    function topicGroupNames () {
-      const { model } = container.lookup('controller:topic');
-      return model && model.category ? model.category.group_names : []
-    }
-
-    function projectGroupNames () {
-      const { extras } = container.lookup('controller:group').model || {};
-      return extras && extras.icij_group_names ? extras.icij_group_names : []
-    }
-
-    function groupNames () {
-      const names = _.flatten(topicGroupNames())
-      return _.unique(names)
+    function collectGroupNames() {
+      let gn = []
+      // Collect from current group (if any)
+      gn.push(route.controllerFor('group').get('model.name'))
+      // Collect from current topic (if any)
+      gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
+      // Return unique and non-nul values
+      return _.chain(gn).compact().unique().value()
     }
 
     api.decorateWidget("home-logo:after", helper => {
-      const items = _.map(groupNames(), group_name => {
-        return helper.h('a.header-projects-item', { href: '/groups/' + group_name + '/categories' }, group_name)
+
+      helper.widget.appEvents.on('page:changed', () => {
+        groupNames = collectGroupNames()
+        helper.widget.scheduleRerender();
       });
+
+      const items = _.map(groupNames, group_name => {
+        const href = '/groups/' + group_name + '/categories'
+        return helper.h('a.header-projects-item', { href }, group_name)
+      });
+
       return helper.h('div.header-projects', items[0]);
     });
 </script>

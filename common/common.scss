@@ -59,3 +59,14 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
 
   }
 }
+
+.project-category-link {
+  font-weight: bold;
+  font-size: 0.8em;
+  padding: 0.2em 0.4em;
+  margin-right: 1em;
+  color: text-contrast($header-projects-item-color) !important;
+  background:  $header-projects-item-color;
+  border-radius: 1em 0 0 1em;
+  float:right;
+}

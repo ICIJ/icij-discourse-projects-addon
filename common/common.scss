@@ -53,16 +53,9 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
 
     .group-bio {
       font-size: 1.1487em;
-      background: $bg;
-      color: $color;
-      box-shadow: -50vw 0 0 0 $bg, 50vw 0 0 0 $bg, -25vw 0 0 0 $bg, 25vw 0 0 0 $bg;
       padding: 1em 0;
       min-height: 3em;
     }
 
-    .group-details-button {
-      top: 100%;
-      margin-top: 20px;
-    }
   }
 }

@@ -1,4 +1,5 @@
 <script type="text/discourse-plugin" version="0.8">
+    const headerAddonRoutes = ['group', 'topic']
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
     let groupNames = []
@@ -13,11 +14,17 @@
       return _.chain(gn).compact().unique().value()
     }
 
+    function collectGroupBio() {
+      return route.controllerFor('group').get('model.bio_cooked')
+    }
+
     api.decorateWidget("home-logo:after", helper => {
 
-      helper.widget.appEvents.on('page:changed', () => {
-        groupNames = collectGroupNames()
-        helper.widget.scheduleRerender();
+      helper.widget.appEvents.on('page:changed', ({ currentRouteName }) => {
+        const routeBase = currentRouteName.split('.')[0]
+        console.log(routeBase)
+        groupNames = headerAddonRoutes.indexOf(routeBase) > -1 ? collectGroupNames() : []
+        helper.widget.scheduleRerender()
       });
 
       const items = _.map(groupNames, group_name => {
@@ -25,6 +32,6 @@
         return helper.h('a.header-projects-item', { href }, group_name)
       });
 
-      return helper.h('div.header-projects', items[0]);
+      return helper.h('div.header-projects', items[0])
     });
 </script>

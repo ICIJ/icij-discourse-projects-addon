@@ -5,25 +5,26 @@
     const route = container.lookup("route:application");
     let groupNames = []
 
-    function collectGroupNames() {
+    function topicGroupNames() {
       let gn = []
       // Collect from current group (if any)
       gn.push(route.controllerFor('group').get('model.name'))
       // Collect from current topic (if any)
       gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
       // Return unique and non-nul values
-      return _.chain(gn).compact().unique().value()
+      return _.chain(gn).compact().unique().filter(name => icijGroupNames().indexOf(name) > -1).value()
     }
 
-    function collectGroupBio() {
-      return route.controllerFor('group').get('model.bio_cooked')
+    function icijGroupNames () {
+      const ctrl = container.lookup("site:main")
+      return ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
     }
 
     api.decorateWidget("home-logo:after", helper => {
 
       helper.widget.appEvents.on('page:changed', ({ currentRouteName }) => {
         const routeBase = currentRouteName.split('.')[0]
-        groupNames = headerAddonRoutes.indexOf(routeBase) > -1 ? collectGroupNames() : []
+        groupNames = headerAddonRoutes.indexOf(routeBase) > -1 ? topicGroupNames() : []
         helper.widget.scheduleRerender()
       });
 

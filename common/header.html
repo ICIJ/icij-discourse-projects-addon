@@ -13,7 +13,7 @@
       gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
       // Return unique and non-nul values
       return _.chain(gn).compact().unique().value()
-    }
+    }    
 
     function collectGroupBio() {
       return route.controllerFor('group').get('model.bio_cooked')

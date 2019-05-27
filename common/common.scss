@@ -52,9 +52,16 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
     }
 
     .group-bio {
+      margin: 2em 0;
       font-size: 1.1487em;
-      padding: 1em 0;
-      min-height: 3em;
+      padding: 1.5em;
+      border:3px solid $tertiary;
+      text-align: center;
+
+      p {
+        margin: 0;
+        padding: 0;
+      }
     }
 
   }

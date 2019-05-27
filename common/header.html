@@ -13,7 +13,7 @@
       gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
       // Return unique and non-nul values
       return _.chain(gn).compact().unique().value()
-    }    
+    }
 
     function collectGroupBio() {
       return route.controllerFor('group').get('model.bio_cooked')
@@ -36,7 +36,7 @@
     });
 
     registerUnbound("project-category-link", function(topic) {
-      const icij_project_names = container.lookup("site:main").get('icij_project_names')
+      const icij_project_names = container.lookup("site:main").get('icij_project_names') || []
       return !topic.category ? '' : new Handlebars.SafeString(topic.category.group_names.map(group_name => {
         // Only create link for ICIJ groups
         if ( icij_project_names.indexOf(group_name) > -1 ) {

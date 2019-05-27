@@ -36,7 +36,8 @@
     });
 
     registerUnbound("project-category-link", function(topic) {
-      const icij_project_names = container.lookup("site:main").get('icij_project_names') || []
+      const ctrl = container.lookup("site:main")
+      const icij_project_names = ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
       return !topic.category ? '' : new Handlebars.SafeString(topic.category.group_names.map(group_name => {
         // Only create link for ICIJ groups
         if ( icij_project_names.indexOf(group_name) > -1 ) {

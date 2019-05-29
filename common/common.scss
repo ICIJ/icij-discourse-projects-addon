@@ -67,13 +67,20 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
   }
 }
 
-.project-category-link {
+.topic-list-item-project, .category-row-project {
   font-weight: bold;
   font-size: 0.8em;
   padding: 0.2em 0.4em;
-  margin-right: 1em;
   color: text-contrast($header-projects-item-color) !important;
   background:  $header-projects-item-color;
   border-radius: 1em 0 0 1em;
-  float:right;
+}
+
+.topic-list-item-project {
+  margin: 0 1em;
+  float: right;
+}
+
+.category-row-project {
+  float: left;
 }

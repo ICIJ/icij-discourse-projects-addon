@@ -1,6 +1,20 @@
 <script type="text/discourse-plugin" version="0.8">
     const { registerUnbound } = require("discourse-common/lib/helpers");
-    const headerAddonRoutes = ['group', 'topic']
+    const headerAddonRoutes = [
+      'topic.fromParams',
+      'topic.fromParamsNear',
+      'group.index',
+      'group.activity.posts',
+      'group.messages.inbox',
+      'group.manage.profile',
+      'group.categories',
+      'discovery.parentCategory',
+      'discovery.latestParentCategory',
+      'discovery.parentCategory',
+      'discovery.unreadParentCategory',
+      'discovery.newParentCategory',
+      'discovery.topParentCategory'
+    ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
     let groupNames = []
@@ -9,19 +23,26 @@
       return route.controller.currentRouteName.indexOf('group.') === 0
     }
 
+    function isDiscoveryRoute () {
+      return route.controller.currentRouteName.indexOf('discovery.') === 0
+    }
+
     function isTopicRoute () {
       return route.controller.currentRouteName.indexOf('topic.') === 0
     }
 
     function topicGroupNames() {
       let gn = []
-      // Collect from current group (if any)
-      if ( isGroupRoute() ) {
-        gn.push(route.controllerFor('group').get('model.name'))
-      }
-      // Collect from current topic (if any)
-      if ( isTopicRoute() ) {
-        gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
+      switch (true) {
+        case isGroupRoute():
+          gn.push(route.controllerFor('group').get('model.name'))
+          break;
+        case isTopicRoute():
+          gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
+          break;
+        case isDiscoveryRoute():
+          gn = gn.concat(route.controllerFor('discovery').get('category.group_names') || [])
+          break;
       }
       // Return unique and non-nul values
       return _.chain(gn).compact().unique().filter(name => icijGroupNames().indexOf(name) > -1).value()
@@ -37,8 +58,7 @@
     api.decorateWidget("home-logo:after", helper => {
 
       helper.widget.appEvents.on('page:changed', ({ currentRouteName }) => {
-        const routeBase = currentRouteName.split('.')[0]
-        groupNames = headerAddonRoutes.indexOf(routeBase) > -1 ? topicGroupNames() : []
+        groupNames = headerAddonRoutes.indexOf(currentRouteName) > -1 ? topicGroupNames() : []
         helper.widget.scheduleRerender()
       });
 

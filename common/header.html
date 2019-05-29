@@ -5,12 +5,24 @@
     const route = container.lookup("route:application");
     let groupNames = []
 
+    function isGroupRoute () {
+      return route.controller.currentRouteName.indexOf('group.') === 0
+    }
+
+    function isTopicRoute () {
+      return route.controller.currentRouteName.indexOf('topic.') === 0
+    }
+
     function topicGroupNames() {
       let gn = []
       // Collect from current group (if any)
-      gn.push(route.controllerFor('group').get('model.name'))
+      if ( isGroupRoute() ) {
+        gn.push(route.controllerFor('group').get('model.name'))
+      }
       // Collect from current topic (if any)
-      gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
+      if ( isTopicRoute() ) {
+        gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
+      }
       // Return unique and non-nul values
       return _.chain(gn).compact().unique().filter(name => icijGroupNames().indexOf(name) > -1).value()
     }
@@ -20,6 +32,8 @@
       return ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
     }
 
+    // This will add a topic addon next to the home-logo, in the navbar
+    // ****************************************************************
     api.decorateWidget("home-logo:after", helper => {
 
       helper.widget.appEvents.on('page:changed', ({ currentRouteName }) => {
@@ -36,6 +50,8 @@
       return helper.h('div.header-projects', items[0])
     });
 
+    // This will add a topic addon next to a topic link, in "latest"
+    // *************************************************************
     registerUnbound("project-category-link", function(topic) {
       const ctrl = container.lookup("site:main")
       const icij_project_names = ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []

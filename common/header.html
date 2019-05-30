@@ -94,13 +94,14 @@
     // This will create a link to a project
     // ************************************
     registerUnbound("category-project-addon-link", function(category) {
-        return icijProjectLinkHTML(category);
+      return icijProjectLinkHTML(category);
     });
 
     // This will create a link to a project only if we're not in the group route
     // *************************************************************************
     registerUnbound("category-title-before-project-addon", function(category) {
-        return isGroupRoute() ? '' :  icijProjectLinkHTML(category, 'category-title-before-project-addon');
+      // Skip if it's a child group
+      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectLinkHTML(category, 'category-title-before-project-addon');
     });
 
     // This will add a topic addon next to a topic link, in "latest"

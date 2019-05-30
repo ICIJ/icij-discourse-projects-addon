@@ -95,6 +95,7 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
   .has-logo .category-description,
   .has-logo .subcategories {
     padding-left: 168px;
+    clear: none;
   }
 
   .category-logo {

@@ -76,7 +76,6 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
   border-radius: 1em 0 0 1em;
 }
 
-
 .category-project-addon {
   float: left;
 
@@ -89,4 +88,18 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
     margin-right: 0.5em;
     float: left;
   }
+}
+
+.category-list  {
+
+  .has-logo .category-description,
+  .has-logo .subcategories {
+    padding-left: 168px;
+  }
+
+  .category-logo {
+    clear: left;
+    max-width: 150px;
+  }
+
 }

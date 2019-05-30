@@ -67,7 +67,7 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
   }
 }
 
-.topic-list-item-project, .category-row-project {
+.topic-list-item-project-addon, .category-project-addon {
   font-weight: bold;
   font-size: 0.8em;
   padding: 0.2em 0.4em;
@@ -76,11 +76,17 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
   border-radius: 1em 0 0 1em;
 }
 
-.topic-list-item-project {
-  margin: 0 1em;
-  float: right;
-}
 
-.category-row-project {
+.category-project-addon {
   float: left;
+
+  &.topic-list-item-project-addon {
+    margin: 0 1em;
+    float: right;
+  }
+
+  &.category-title-before-project-addon {
+    margin-right: 0.5em;
+    float: left;
+  }
 }

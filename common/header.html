@@ -31,7 +31,7 @@
       return route.controller.currentRouteName.indexOf('topic.') === 0
     }
 
-    function topicGroupNames() {
+    function currentProjectNames() {
       let gn = []
       switch (true) {
         case isGroupRoute():
@@ -45,12 +45,22 @@
           break;
       }
       // Return unique and non-nul values
-      return _.chain(gn).compact().unique().filter(name => icijGroupNames().indexOf(name) > -1).value()
+      return _.chain(gn).compact().unique().filter(name => icijProjectsNames().indexOf(name) > -1).value()
     }
 
-    function icijGroupNames () {
+    function icijProjectsNames () {
       const ctrl = container.lookup("site:main")
       return ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
+    }
+
+    function icijProjectLinkHTML (category, className = '') {
+      return new Handlebars.SafeString(category.group_names.map(group_name => {
+        // Only create link for ICIJ groups
+        if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+          return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
+        }
+      }).join(' '));
     }
 
     // This will add a topic addon next to the home-logo, in the navbar
@@ -58,7 +68,7 @@
     api.decorateWidget("home-logo:after", helper => {
 
       helper.widget.appEvents.on('page:changed', ({ currentRouteName }) => {
-        groupNames = headerAddonRoutes.indexOf(currentRouteName) > -1 ? topicGroupNames() : []
+        groupNames = headerAddonRoutes.indexOf(currentRouteName) > -1 ? currentProjectNames() : []
         helper.widget.scheduleRerender()
       });
 
@@ -70,37 +80,45 @@
       return helper.h('div.header-projects', items[0])
     });
 
-
-    // This will add a topic addon next to a category link
-    // ****************************************************************
-    registerUnbound("category-row-project", function(category) {
+    // This will add a topic addon next to a category link, in the category drop
+    // *************************************************************************
+    registerUnbound("category-project-addon", function(category, link = false) {
         return new Handlebars.SafeString(category.group_names.map(group_name => {
           // Only create link for ICIJ groups
-          if ( icijGroupNames().indexOf(group_name) > -1 ) {
-            return `<span class="category-row-project">${group_name}</span>`
+          if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+            return `<span class="category-project-addon">${group_name}</span>`;
           }
         }).join(' '));
     });
 
+    // This will create a link to a project
+    // ************************************
+    registerUnbound("category-project-addon-link", function(category) {
+        return icijProjectLinkHTML(category);
+    });
+
+    // This will create a link to a project only if we're not in the group route
+    // *************************************************************************
+    registerUnbound("category-title-before-project-addon", function(category) {
+        return isGroupRoute() ? '' :  icijProjectLinkHTML(category, 'category-title-before-project-addon');
+    });
 
     // This will add a topic addon next to a topic link, in "latest"
     // *************************************************************
-    registerUnbound("topic-list-item-project", function(topic) {
-      return !topic.category ? '' : new Handlebars.SafeString(topic.category.group_names.map(group_name => {
-        // Only create link for ICIJ groups
-        if ( icijGroupNames().indexOf(group_name) > -1 ) {
-          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
-          return `<a href="${href}" class="topic-list-item-project">${group_name}</a>`
-        }
-      }).join(' '));
+    registerUnbound("topic-list-item-project-addon", function(topic) {
+      return !topic.category ? '' : icijProjectLinkHTML(topic.category, 'topic-list-item-project-addon');
     });
+</script>
+
+<script type='text/x-handlebars' data-template-name='/connectors/category-title-before/project-addon'>
+  {{category-title-before-project-addon category}}
 </script>
 
 <script type='text/x-handlebars' data-template-name='select-kit/templates/components/category-row'>
   {{#if category}}
       {{#if hasParentCategory}}
         <div class="category-status">
-          {{category-row-project category}}
+          {{category-project-addon category}}
           {{#unless hideParentCategory}}
             {{badgeForParentCategory}}
           {{/unless}}
@@ -109,7 +127,7 @@
         </div>
       {{else}}
         <div class="category-status">
-          {{category-row-project category}}
+          {{category-project-addon category}}
           {{badgeForCategory}}
           <span class="topic-count">{{topicCount}}</span>
         </div>
@@ -151,7 +169,7 @@
       {{~/if}}
     </span>
 
-    {{topic-list-item-project topic}}
+    {{topic-list-item-project-addon topic}}
 
     {{discourse-tags topic mode="list" tagsForUser=tagsForUser}}
     {{#if expandPinned}}

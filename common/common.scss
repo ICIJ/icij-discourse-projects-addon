@@ -47,7 +47,7 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
     padding: 0;
     background: transparent;
 
-    .group-info, .group-info + hr {
+    .group-info, & > hr {
       display: none;
     }
 

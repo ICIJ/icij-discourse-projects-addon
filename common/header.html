@@ -159,6 +159,8 @@
     at the end of the link, preventing it from line wrapping onto its own line.
   --}}
   <td class='main-link clearfix' colspan="{{titleColSpan}}">
+    {{topic-list-item-project-addon topic}}
+
     <span class='link-top-line'>
       {{~raw-plugin-outlet name="topic-list-before-status"}}
       {{~raw "topic-status" topic=topic}}
@@ -171,8 +173,6 @@
         {{~raw "topic-post-badges" unread=topic.unread newPosts=topic.displayNewPosts unseen=topic.unseen url=topic.lastUnreadUrl newDotText=newDotText}}
       {{~/if}}
     </span>
-
-    {{topic-list-item-project-addon topic}}
 
     {{discourse-tags topic mode="list" tagsForUser=tagsForUser}}
     {{#if expandPinned}}

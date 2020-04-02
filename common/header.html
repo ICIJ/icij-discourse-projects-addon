@@ -37,17 +37,15 @@
     }
 
     function currentProjectNames() {
-      let gn = []
+      let gn;
       switch (true) {
         case isGroupRoute():
-          gn.push(route.controllerFor('group').get('model.name'))
-          break;
+          gn = [ route.controllerFor('group').get('model.name') ]
         case isTopicRoute():
-          gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
+          gn =  route.controllerFor('topic').get('model.category.group_names') || []
           break;
         case isDiscoveryRoute():
-          gn = gn.concat(route.controllerFor('discovery').get('category.group_names') || [])
-          break;
+          gn = route.controllerFor('discovery').get('category.group_names') || []
       }
       // Return unique and non-nul values
       return _.chain(gn).compact().unique().filter(name => icijProjectsNames().indexOf(name) > -1).value()

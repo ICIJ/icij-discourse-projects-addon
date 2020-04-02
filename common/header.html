@@ -36,6 +36,12 @@
       return route.controller.currentRouteName.indexOf('topic.') === 0
     }
 
+    function filterNames (value, index, self) {
+      if(value !== false || value !== null || value !== 0 || value !== "" || self.indexOf(value) === index) {
+        return value
+      }
+    }
+
     function currentProjectNames() {
       let gn = []
       switch (true) {
@@ -51,7 +57,7 @@
       }
       console.log(gn);
       // Return unique and non-nul values
-      return _.chain(gn).compact().unique().filter(name => icijProjectsNames().indexOf(name) > -1).value()
+      return gn.filter(filterNames)
     }
 
     function icijProjectsNames () {

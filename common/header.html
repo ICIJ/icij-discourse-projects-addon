@@ -55,7 +55,6 @@
           gn = gn.concat(route.controllerFor('discovery').get('category.group_names') || [])
           break;
       }
-      console.log(gn);
       // Return unique and non-nul values
       return gn.filter(filterNames)
     }

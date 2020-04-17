@@ -66,13 +66,15 @@
 
     function icijProjectLinkHTML (category, className = '') {
       console.log(category);
-      return new Handlebars.SafeString(category.group_names.map(group_name => {
-        // Only create link for ICIJ groups
-        if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-          const href = Discourse.getURL(`/g/${group_name.toLowerCase()}/categories`)
-          return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
-        }
-      }).join(' '));
+      if (category.group_names) {
+        return new Handlebars.SafeString(category.group_names.map(group_name => {
+          // Only create link for ICIJ groups
+          if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+            const href = Discourse.getURL(`/g/${group_name.toLowerCase()}/categories`)
+            return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
+          }
+        }).join(' '));
+      }
     }
 
     // This will add a topic addon next to the home-logo, in the navbar
@@ -96,6 +98,7 @@
     // *************************************************************************
     registerUnbound("category-project-addon", function(category, link = false) {
       console.log(category);
+      if (category.group_names) {
         return new Handlebars.SafeString(category.group_names.map(group_name => {
           console.log(group_name);
           // Only create link for ICIJ groups
@@ -103,6 +106,7 @@
             return `<span class="category-project-addon">${group_name}</span>`;
           }
         }).join(' '));
+      }
     });
 
     // This will create a link to a project

@@ -65,10 +65,11 @@
     }
 
     function icijProjectLinkHTML (category, className = '') {
+      console.log(category);
       return new Handlebars.SafeString(category.group_names.map(group_name => {
         // Only create link for ICIJ groups
         if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+          const href = Discourse.getURL(`/g/${group_name.toLowerCase()}/categories`)
           return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
         }
       }).join(' '));
@@ -84,7 +85,7 @@
       });
 
       const items = _.map(groupNames, group_name => {
-        const href = `/groups/${group_name.toLowerCase()}/categories`
+        const href = `/g/${group_name.toLowerCase()}/categories`
         return helper.h('a.header-projects-item', { href }, group_name)
       });
 
@@ -94,7 +95,7 @@
     // This will add a topic addon next to a category link, in the category drop
     // *************************************************************************
     registerUnbound("category-project-addon", function(category, link = false) {
-      console.log(category.group_names);
+      console.log(category);
         return new Handlebars.SafeString(category.group_names.map(group_name => {
           console.log(group_name);
           // Only create link for ICIJ groups
@@ -107,6 +108,7 @@
     // This will create a link to a project
     // ************************************
     registerUnbound("category-project-addon-link", function(category) {
+      console.log(category);
       return icijProjectLinkHTML(category);
     });
 

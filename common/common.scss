@@ -43,13 +43,7 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
     $bg: darken($header_background, 20);
     $color: text-contrast($bg);
 
-    margin-top: -1.4em;
-    padding: 0;
     background: transparent;
-
-    .group-info, & > hr {
-      display: none;
-    }
 
     .group-bio {
       margin: 2em 0;

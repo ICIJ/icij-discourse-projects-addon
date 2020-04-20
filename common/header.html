@@ -65,7 +65,6 @@
     }
 
     function icijProjectLinkHTML (category, className = '') {
-      console.log(category);
       if (category.icij_projects_for_category) {
         return new Handlebars.SafeString(category.icij_projects_for_category.map(group_name => {
           // Only create link for ICIJ groups
@@ -97,10 +96,8 @@
     // This will add a topic addon next to a category link, in the category drop
     // *************************************************************************
     registerUnbound("category-project-addon", function(category, link = false) {
-      console.log(category);
       if (category.icij_projects_for_category) {
         return new Handlebars.SafeString(category.icij_projects_for_category.map(group_name => {
-          console.log(group_name);
           // Only create link for ICIJ groups
           if ( icijProjectsNames().indexOf(group_name) > -1 ) {
             return `<span class="category-project-addon">${group_name}</span>`;
@@ -112,7 +109,6 @@
     // This will create a link to a project
     // ************************************
     registerUnbound("category-project-addon-link", function(category) {
-      console.log(category);
       return icijProjectLinkHTML(category);
     });
 

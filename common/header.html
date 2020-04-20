@@ -18,7 +18,8 @@
       'discovery.newParentCategory',
       'discovery.topParentCategory',
       'discovery.category',
-      'discovery.categoryNone'
+      'discovery.categoryNone',
+      'discovery.categoryWithID'
     ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
@@ -29,9 +30,6 @@
     }
 
     function isDiscoveryRoute () {
-      console.log(route);
-      console.log(route.controller);
-      console.log(route.controller.currentRouteName);
       return route.controller.currentRouteName.indexOf('discovery.') === 0
     }
 

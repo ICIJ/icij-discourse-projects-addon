@@ -104,7 +104,7 @@
       buildKey: () => `project-bar-widget`,
       defaultState() {
         return {
-          group_names: []
+          icij_projects_for_category: []
         };
       },
       loadGroups() {
@@ -129,20 +129,18 @@
         helper.widget.sendWidgetAction("loadGroups")
         helper.widget.scheduleRerender()
       })
-    })
-
+    });
 
     // This will add a topic addon next to a category link, in the category drop
     // *************************************************************************
     registerUnbound("category-project-addon", function(category = {}, link = false) {
-        const group_names = category.icij_projects_for_category || []
-        return new Handlebars.SafeString(group_names.map(group_name => {
-          // Only create link for ICIJ groups
-          if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-            return `<span class="category-project-addon">${group_name}</span>`;
-          }
-        }).join(' '));
-      }
+      const group_names = category.icij_projects_for_category || []
+      return new Handlebars.SafeString(group_names.map(group_name => {
+        // Only create link for ICIJ groups
+        if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+          return `<span class="category-project-addon">${group_name}</span>`;
+        }
+      }).join(' '));
     });
 
     // This will create a link to a project

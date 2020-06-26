@@ -64,10 +64,9 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
 .topic-list-item-project-addon, .category-project-addon {
   font-family: "Lato",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   font-size: 85%;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-weight: 700;
   color: #212529;
-  background-color: #ebebeb;
+  background: repeating-linear-gradient(-55deg, #ebebeb, #ebebeb 2px, #fff 2px, #fff 4px);
   display: inline-block;
   padding: .25em .4em;
   line-height: 1;

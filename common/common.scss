@@ -15,10 +15,6 @@
 $header-projects-item-bg: text-contrast($header_background);
 $header-projects-item-color: text-contrast($header-projects-item-bg);
 
-.d-header {
-  border-bottom: rgba($header-projects-item-bg, 0.1) 1px solid;
-}
-
 .header-projects {
   height: 42px;
   display: flex;
@@ -48,13 +44,17 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
     .group-bio {
       margin: 2em 0;
       font-size: 1.1487em;
-      padding: 1.5em;
+      padding: 1.5em 1.5em 0;
       border:3px solid $tertiary;
       text-align: left;
 
-      p {
+      & p {
         margin: 0;
         padding: 0;
+
+        & > p {
+          padding-bottom: 1.5em;
+        }
       }
     }
 
@@ -62,12 +62,18 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
 }
 
 .topic-list-item-project-addon, .category-project-addon {
-  font-weight: bold;
-  font-size: 0.8em;
-  padding: 0.2em 0.4em;
-  color: text-contrast($header-projects-item-color) !important;
-  background:  $header-projects-item-color;
-  border-radius: 1em 0 0 1em;
+  font-family: "Lato",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size: 85%;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #212529;
+  background-color: #ebebeb;
+  display: inline-block;
+  padding: .25em .4em;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 .category-project-addon {
@@ -95,6 +101,32 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
   .category-logo {
     clear: left;
     max-width: 150px;
+  }
+
+}
+
+.project-bar {
+  width: 100%;
+  padding-top: 60px;
+  margin-bottom: -60px;
+  position: relative;
+  overflow: hidden;
+
+  display: block;
+  background: repeating-linear-gradient(-55deg, #eef7f9, #eef7f9 2px, #fff 2px, #fff 4px);
+  text-align: center;
+
+  &:empty {
+    display: none;
+  }
+
+  &__container {
+    padding: 0.2rem;
+
+    a {
+      font-weight: 700;
+      border-bottom: $tertiary 1px solid;
+    }
   }
 
 }

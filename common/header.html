@@ -1,5 +1,7 @@
 <script type="text/discourse-plugin" version="0.8">
     const { registerUnbound } = require("discourse-common/lib/helpers");
+    const { h } = require('virtual-dom');
+
     const headerAddonRoutes = [
       'topic.fromParams',
       'topic.fromParamsNear',
@@ -24,7 +26,6 @@
     ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
-    let groupNames = []
 
     function isGroupRoute () {
       return route.controller.currentRouteName.indexOf('group.') === 0
@@ -38,14 +39,8 @@
       return route.controller.currentRouteName.indexOf('topic.') === 0
     }
 
-    function isSearchRoute () {
-      return route.controller.currentRouteName === "full-page-search"
-    }
-
-    function filterNames (value, index, self) {
-      if(value !== false || value !== null || value !== 0 || value !== "" || self.indexOf(value) === index) {
-        return value
-      }
+    function isProjectName (name) {
+      return icijProjectsNames().indexOf(name) > -1
     }
 
     function currentProjectNames() {
@@ -55,16 +50,18 @@
           gn.push(route.controllerFor('group').get('model.name'))
           break;
         case isTopicRoute():
+          gn = gn.concat(route.controllerFor('topic').get('model.category.group_names') || [])
           gn = gn.concat(route.controllerFor('topic').get('model.category.icij_projects_for_category') || [])
           break;
         case isDiscoveryRoute():
+          gn = gn.concat(route.controllerFor('discovery').get('category.group_names') || [])
           gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
           break;
         case isSearchRoute():
           gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
       }
       // Return unique and non-nul values
-      return gn.filter(filterNames)
+      return _.chain(gn).compact().uniq().filter(isProjectName).value() || []
     }
 
     function icijProjectsNames () {
@@ -72,40 +69,74 @@
       return ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
     }
 
-    function icijProjectLinkHTML (category, className = '') {
-      if (category.icij_projects_for_category) {
-        return new Handlebars.SafeString(category.icij_projects_for_category.map(group_name => {
-          // Only create link for ICIJ groups
-          if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-            const href = Discourse.getURL(`/g/${group_name.toLowerCase()}/categories`)
-            return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
-          }
-        }).join(' '));
-      }
+    function icijProjectAddonHTML (category, className = '') {
+      return (category.icij_projects_for_category || []).map(group_name => {
+        // Only create link for ICIJ groups
+        if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+          return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
+        }
+      }).join(' ');
     }
 
-    // This will add a topic addon next to the home-logo, in the navbar
-    // ****************************************************************
-    api.decorateWidget("home-logo:after", helper => {
+    function icijProjectAddonSafeHTML (category, className) {
+      return new Handlebars.SafeString(icijProjectAddonHTML(category, className))
+    }
 
-      helper.widget.appEvents.on('page:changed', ({ currentRouteName }) => {
-        groupNames = headerAddonRoutes.indexOf(currentRouteName) > -1 ? currentProjectNames() : []
-        helper.widget.scheduleRerender()
-      });
+    function icijProjectLinkHTML (category = {}, className = '') {
+      return (category.icij_projects_for_category || []).map(group_name => {
+        // Only create link for ICIJ groups
+        if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+          return `<a href="${href}" class="${className}">${group_name}</a>`;
+        }
+      }).join(' ');
+    }
 
-      const items = _.map(groupNames, group_name => {
-        const href = `/g/${group_name.toLowerCase()}/categories`
-        return helper.h('a.header-projects-item', { href }, group_name)
-      });
+    function icijProjectLinkSafeHTML (category, className) {
+      return new Handlebars.SafeString(icijProjectLinkHTML(category, className))
+    }
 
-      return helper.h('div.header-projects', items[0])
+    // This will a create a widget to add to next to the header
+    // *************************************************************************
+    api.createWidget("project-bar-widget", {
+      tagName: 'div.project-bar',
+      buildKey: () => `project-bar-widget`,
+      defaultState() {
+        return {
+          group_names: []
+        };
+      },
+      loadGroups() {
+        this.state.icij_projects_for_category = currentProjectNames()
+      },
+      html(attrs, state) {
+        if (state.icij_projects_for_category.length === 0) {
+          return
+        }
+
+        const innerHTML = icijProjectLinkHTML(state)
+        return h('div.project-bar__container', [
+          'You\'re in project ',
+          h('span', { innerHTML })
+        ])
+      }
     });
+
+    api.decorateWidget('project-bar-widget:after', helper => {
+      helper.widget.appEvents.on('page:changed', () => {
+        // Load the groups and render the widget
+        helper.widget.sendWidgetAction("loadGroups")
+        helper.widget.scheduleRerender()
+      })
+    })
+
 
     // This will add a topic addon next to a category link, in the category drop
     // *************************************************************************
-    registerUnbound("category-project-addon", function(category, link = false) {
-      if (category.icij_projects_for_category) {
-        return new Handlebars.SafeString(category.icij_projects_for_category.map(group_name => {
+    registerUnbound("category-project-addon", function(category = {}, link = false) {
+        const group_names = category.icij_projects_for_category || []
+        return new Handlebars.SafeString(group_names.map(group_name => {
           // Only create link for ICIJ groups
           if ( icijProjectsNames().indexOf(group_name) > -1 ) {
             return `<span class="category-project-addon">${group_name}</span>`;
@@ -117,25 +148,29 @@
     // This will create a link to a project
     // ************************************
     registerUnbound("category-project-addon-link", function(category) {
-      return icijProjectLinkHTML(category);
+      return icijProjectAddonSafeHTML(category);
     });
 
     // This will create a link to a project only if we're not in the group route
     // *************************************************************************
     registerUnbound("category-title-before-project-addon", function(category) {
       // Skip if it's a child group
-      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectLinkHTML(category, 'category-title-before-project-addon');
+      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectAddonSafeHTML(category, 'category-title-before-project-addon');
     });
 
     // This will add a topic addon next to a topic link, in "latest"
     // *************************************************************
     registerUnbound("topic-list-item-project-addon", function(topic) {
-      return !topic.category ? '' : icijProjectLinkHTML(topic.category, 'topic-list-item-project-addon');
+      return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'topic-list-item-project-addon');
     });
 
     registerUnbound("full-page-search-project-addon", function(topic) {
       return !topic.category ? '' : icijProjectLinkHTML(topic.category, 'full-page-search-project-addon');
     });
+</script>
+
+<script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-bar-widget'>
+  {{mount-widget widget="project-bar-widget"}}
 </script>
 
 <script type='text/x-handlebars' data-template-name='/connectors/category-title-before/project-addon'>

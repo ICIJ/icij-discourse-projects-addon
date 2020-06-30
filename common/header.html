@@ -43,6 +43,10 @@
       return icijProjectsNames().indexOf(name) > -1
     }
 
+    function isSearchRoute () {
+      return route.controller.currentRouteName === "full-page-search"
+    }
+
     function currentProjectNames() {
       let gn = []
       switch (true) {

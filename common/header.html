@@ -22,8 +22,7 @@
       'discovery.category',
       'discovery.categoryNone',
       'discovery.categoryWithID',
-      'full-page-search',
-      'user.userPrivateMessages'
+      'full-page-search'
     ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
@@ -46,11 +45,6 @@
 
     function isSearchRoute () {
       return route.controller.currentRouteName === "full-page-search"
-    }
-
-    function isUserPrivateMessages () {
-      console.log(route.controller.currentRouteName);
-      return route.controller.currentRouteName === "user-private-messages"
     }
 
     function currentProjectNames() {
@@ -76,9 +70,7 @@
 
     function icijProjectsNames () {
       const ctrl = container.lookup("site:main")
-      let names = ctrl.get("available_icij_projects")
-      names = names.map(obj => obj.name)
-      return names || []
+      return ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
     }
 
     function icijProjectAddonHTML (category, className = '') {
@@ -175,7 +167,7 @@
     });
 
     registerUnbound("full-page-search-project-addon", function(topic) {
-      return !topic.category ? '' : icijProjectLinkHTML(topic.category, 'full-page-search-project-addon');
+      return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'full-page-search-project-addon');
     });
 </script>
 

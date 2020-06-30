@@ -99,5 +99,10 @@ $header-projects-item-color: text-contrast($header-projects-item-bg);
       border-bottom: $tertiary 1px solid;
     }
   }
+}
 
+.full-page-search-project-addon {
+  float: right;
+  font-size: 100%;
+  margin-left: 10px;
 }

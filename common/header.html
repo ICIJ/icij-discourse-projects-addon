@@ -22,7 +22,8 @@
       'discovery.category',
       'discovery.categoryNone',
       'discovery.categoryWithID',
-      'full-page-search'
+      'full-page-search',
+      'user.messsages'
     ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
@@ -47,6 +48,10 @@
       return route.controller.currentRouteName === "full-page-search"
     }
 
+    function isPrivateMessagesRoute () {
+      console.log(route.controller.currentRouteName);
+    }
+
     function currentProjectNames() {
       let gn = []
       switch (true) {
@@ -62,6 +67,8 @@
           gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
           break;
         case isSearchRoute():
+          gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
+        case isPrivateMessagesRoute():
           gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
       }
       // Return unique and non-nul values

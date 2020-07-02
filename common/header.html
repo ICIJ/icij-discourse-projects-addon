@@ -23,7 +23,8 @@
       'discovery.categoryNone',
       'discovery.categoryWithID',
       'full-page-search',
-      'user.messsages'
+      'user.messsages',
+      'user.messages.group'
     ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
@@ -48,9 +49,18 @@
       return route.controller.currentRouteName === "full-page-search"
     }
 
-    function isPrivateMessagesRoute () {
+    function isPrivateMessageIndex () {
+      console.log(route.controller.currentRouteName);
+      return route.controller.currentRouteName === "userPrivateMessages.index"
+    }
+
+    function isGroupPrivateMessage () {
       console.log(route.controller.currentRouteName);
     }
+
+
+
+    // get group name from route
 
     function currentProjectNames() {
       let gn = []
@@ -68,8 +78,10 @@
           break;
         case isSearchRoute():
           gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
-        case isPrivateMessagesRoute():
-          gn = gn.concat(route.controllerFor('discovery').get('category.icij_projects_for_category') || [])
+        case isPrivateMessageIndex():
+          console.log(route.controller.currentRouteName);
+        case isGroupPrivateMessage():
+          console.log(route.controller.currentRouteName);
       }
       // Return unique and non-nul values
       return _.chain(gn).compact().uniq().filter(isProjectName).value() || []
@@ -172,12 +184,19 @@
     // This will add a topic addon next to a topic link, in "latest"
     // *************************************************************
     registerUnbound("topic-list-item-project-addon", function(topic) {
+      // if (topic.archetype === "private_message") {
+      //
+      // }
       return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'topic-list-item-project-addon');
     });
 
     registerUnbound("full-page-search-project-addon", function(topic) {
       return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'full-page-search-project-addon');
     });
+
+    // registerUnbound("private-messages-index-addon", function(topic) {
+    //   return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'private-messages-index-addon');
+    // })
 </script>
 
 <script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-bar-widget'>

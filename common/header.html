@@ -184,7 +184,7 @@
     // *************************************************************
     registerUnbound("topic-list-item-project-addon", function(topic) {
       if (topic.archetype === "private_message") {
-        let category = null
+        let category = "none"
         return isPrivateMessageIndex() ? icijProjectAddonSafeHTML(category, 'Direct Message', 'topic-list-item-project-addon') : icijProjectAddonSafeHTML(category, 'Project Message', 'topic-list-item-project-addon')
       } else {
         return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'topic-list-item-project-addon');

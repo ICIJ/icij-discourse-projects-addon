@@ -54,10 +54,6 @@
       return route.controller.currentRouteName === "userPrivateMessages.index"
     }
 
-    function isGroupPrivateMessage () {
-      return route.controller.currentRouteName === "userPrivateMessages.group"
-    }
-
     function currentProjectNames() {
       let gn = []
       switch (true) {
@@ -87,7 +83,6 @@
     }
 
     function icijProjectAddonHTML (category, privateMessageName, className = '') {
-      console.log(privateMessageName);
       if (privateMessageName !== 'none') {
         return `<span class="category-project-addon category-project-addon-link ${className}">${privateMessageName}</span>`;
       } else {
@@ -175,7 +170,7 @@
     // *************************************************************************
     registerUnbound("category-title-before-project-addon", function(category) {
       // Skip if it's a child group
-      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectAddonSafeHTML(category, 'category-title-before-project-addon');
+      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectAddonSafeHTML(category, 'none', 'category-title-before-project-addon');
     });
 
     // This will add a topic addon next to a topic link, in "latest"
@@ -183,7 +178,6 @@
     registerUnbound("topic-list-item-project-addon", function(topic) {
       if (topic.archetype === "private_message") {
         let category = "none"
-        console.log("inside unbound");
         return isPrivateMessageIndex() ? icijProjectAddonSafeHTML(category, 'Direct Message', 'topic-list-item-project-addon') : icijProjectAddonSafeHTML(category, 'Project Message', 'topic-list-item-project-addon')
       } else {
         return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'none', 'topic-list-item-project-addon');

@@ -97,9 +97,8 @@
             const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
             return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
           }
-        }
+        }).join(' ');
       }
-      }).join(' ');
     }
 
     function icijProjectAddonSafeHTML (category, privateMessageName, className) {

@@ -50,6 +50,7 @@
     }
 
     function isPrivateMessageIndex () {
+      console.log('is private message');
       return route.controller.currentRouteName === "userPrivateMessages.index"
     }
 
@@ -92,6 +93,7 @@
     function icijProjectAddonHTML (category, privateMessageName, className = '') {
       return (category.icij_projects_for_category || []).map(group_name => {
         if (privateMessageName !== 'none') {
+          console.log(privateMessageName);
           return `<a href="#" class="category-project-addon category-project-addon-link ${className}">${privateMessageName}</a>`;
         } else {
           // Only create link for ICIJ groups
@@ -185,6 +187,7 @@
     registerUnbound("topic-list-item-project-addon", function(topic) {
       if (topic.archetype === "private_message") {
         let category = "none"
+        console.log("inside unbound");
         return isPrivateMessageIndex() ? icijProjectAddonSafeHTML(category, 'Direct Message', 'topic-list-item-project-addon') : icijProjectAddonSafeHTML(category, 'Project Message', 'topic-list-item-project-addon')
       } else {
         return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'none', 'topic-list-item-project-addon');

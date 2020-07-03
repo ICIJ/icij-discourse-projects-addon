@@ -91,6 +91,7 @@
     }
 
     function icijProjectAddonHTML (category, privateMessageName, className = '') {
+      console.log(privateMessageName);
       return (category.icij_projects_for_category || []).map(group_name => {
         if (privateMessageName !== 'none') {
           console.log(privateMessageName);

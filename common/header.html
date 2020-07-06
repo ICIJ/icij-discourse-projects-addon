@@ -22,7 +22,9 @@
       'discovery.category',
       'discovery.categoryNone',
       'discovery.categoryWithID',
-      'full-page-search'
+      'full-page-search',
+      'user.messsages',
+      'user.messages.group'
     ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
@@ -45,6 +47,11 @@
 
     function isSearchRoute () {
       return route.controller.currentRouteName === "full-page-search"
+    }
+
+    function isPrivateMessageIndex () {
+      console.log('is private message');
+      return route.controller.currentRouteName === "userPrivateMessages.index"
     }
 
     function currentProjectNames() {
@@ -70,21 +77,27 @@
 
     function icijProjectsNames () {
       const ctrl = container.lookup("site:main")
-      return ctrl.get('icij_group_names') || ctrl.get('icij_project_names') || []
+      let names = ctrl.get("available_icij_projects")
+      names = names.map(obj => obj.name)
+      return names || []
     }
 
-    function icijProjectAddonHTML (category, className = '') {
-      return (category.icij_projects_for_category || []).map(group_name => {
-        // Only create link for ICIJ groups
-        if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
-          return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
-        }
-      }).join(' ');
+    function icijProjectAddonHTML (category, privateMessageName, className = '') {
+      if (privateMessageName !== 'none') {
+        return `<span class="category-project-addon category-project-addon-link ${className}">${privateMessageName}</span>`;
+      } else {
+        return (category.icij_projects_for_category || []).map(group_name => {
+          // Only create link for ICIJ groups
+          if ( icijProjectsNames().indexOf(group_name) > -1 ) {
+            const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+            return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
+          }
+        }).join(' ');
+      }
     }
 
-    function icijProjectAddonSafeHTML (category, className) {
-      return new Handlebars.SafeString(icijProjectAddonHTML(category, className))
+    function icijProjectAddonSafeHTML (category, privateMessageName, className) {
+      return new Handlebars.SafeString(icijProjectAddonHTML(category, privateMessageName, className))
     }
 
     function icijProjectLinkHTML (category = {}, className = '') {
@@ -157,18 +170,24 @@
     // *************************************************************************
     registerUnbound("category-title-before-project-addon", function(category) {
       // Skip if it's a child group
-      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectAddonSafeHTML(category, 'category-title-before-project-addon');
+      return isGroupRoute() || !!category.parentCategory ? '' :  icijProjectAddonSafeHTML(category, 'none', 'category-title-before-project-addon');
     });
 
     // This will add a topic addon next to a topic link, in "latest"
     // *************************************************************
     registerUnbound("topic-list-item-project-addon", function(topic) {
-      return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'topic-list-item-project-addon');
+      if (topic.archetype === "private_message") {
+        let category = "none"
+        return isPrivateMessageIndex() ? icijProjectAddonSafeHTML(category, 'Direct Message', 'topic-list-item-project-addon') : icijProjectAddonSafeHTML(category, 'Project Message', 'topic-list-item-project-addon')
+      } else {
+        return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'none', 'topic-list-item-project-addon');
+      }
     });
 
     registerUnbound("full-page-search-project-addon", function(topic) {
-      return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'full-page-search-project-addon');
+      return !topic.category ? '' : icijProjectAddonSafeHTML(topic.category, 'none', 'full-page-search-project-addon');
     });
+
 </script>
 
 <script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-bar-widget'>

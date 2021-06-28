@@ -89,7 +89,7 @@
         return (category.icij_projects_for_category || []).map(group_name => {
           // Only create link for ICIJ groups
           if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-            const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+            const href = Discourse.getURL(`/g/${group_name.toLowerCase()}/categories`)
             return `<a href="${href}" class="category-project-addon category-project-addon-link ${className}">${group_name}</a>`;
           }
         }).join(' ');
@@ -104,7 +104,7 @@
       return (category.icij_projects_for_category || []).map(group_name => {
         // Only create link for ICIJ groups
         if ( icijProjectsNames().indexOf(group_name) > -1 ) {
-          const href = Discourse.getURL(`/groups/${group_name.toLowerCase()}/categories`)
+          const href = Discourse.getURL(`/g/${group_name.toLowerCase()}/categories`)
           return `<a href="${href}" class="${className}">${group_name}</a>`;
         }
       }).join(' ');

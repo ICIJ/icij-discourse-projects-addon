@@ -1,31 +1,6 @@
 <script type="text/discourse-plugin" version="0.8">
     const { registerUnbound } = require("discourse-common/lib/helpers");
     const { h } = require('virtual-dom');
-
-    const headerAddonRoutes = [
-      'topic.fromParams',
-      'topic.fromParamsNear',
-      'group.index',
-      'group.activity.posts',
-      'group.activity.topics',
-      'group.activity.mentions',
-      'group.messages.inbox',
-      'group.manage.profile',
-      'group.categories',
-      'group.topics',
-      'discovery.parentCategory',
-      'discovery.latestParentCategory',
-      'discovery.parentCategory',
-      'discovery.unreadParentCategory',
-      'discovery.newParentCategory',
-      'discovery.topParentCategory',
-      'discovery.category',
-      'discovery.categoryNone',
-      'discovery.categoryWithID',
-      'full-page-search',
-      'user.messsages',
-      'user.messages.group'
-    ]
     const container = Discourse.__container__;
     const route = container.lookup("route:application");
 
@@ -50,7 +25,6 @@
     }
 
     function isPrivateMessageIndex () {
-      console.log('is private message');
       return route.controller.currentRouteName === "userPrivateMessages.index"
     }
 
@@ -148,6 +122,36 @@
       })
     });
 
+     // This will a description on project page
+    // *************************************************************************
+    api.createWidget("project-description-widget", {
+      tagName: 'div.project-description',
+      buildKey: () => `project-description`,
+      defaultState() {
+        return {
+          bio_cooked: null
+        };
+      },
+      loadBioCooked() {
+        this.state.bio_cooked = route.controllerFor('group').get('model.bio_cooked')
+      },
+      html(attrs, state) {
+        if (!isGroupRoute() || !state.bio_cooked) {
+          return
+        }
+        const innerHTML = state.bio_cooked
+        return h('div.project-description__container.wrap', { innerHTML })
+      }
+    });
+
+    api.decorateWidget('project-description-widget:after', helper => {
+      helper.widget.appEvents.on('page:changed', () => {
+        // Load the bio
+        helper.widget.sendWidgetAction("loadBioCooked")
+        helper.widget.scheduleRerender()
+      })
+    });
+
     // This will add a topic addon next to a category link, in the category drop
     // *************************************************************************
     registerUnbound("category-project-addon", function(category = {}, link = false) {
@@ -192,6 +196,14 @@
 
 <script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-bar-widget'>
   {{mount-widget widget="project-bar-widget"}}
+</script>
+
+<script type='text/x-handlebars' data-template-name='/connectors/below-site-header/project-description-widget'>
+  {{mount-widget widget="project-description-widget"}}
+</script>
+
+<script type='text/x-handlebars' data-template-name='/connectors/below-site-header/negative-margin'>
+  <div style="margin-bottom: -60px"></div>
 </script>
 
 <script type='text/x-handlebars' data-template-name='/connectors/category-title-before/project-addon'>
